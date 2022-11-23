@@ -51,6 +51,9 @@ var resolvers resolverFlag // This is typed, but it's still also a []string and 
 var checks checkFlag
 var resolver_idx int
 var read_stdin bool
+var force_ipv4_connectivity bool
+var force_ipv6_connectivity bool
+var force_resolver_check bool
 var logLevel *zapcore.Level
 var output_filename string
 
@@ -64,6 +67,9 @@ func main() {
 	flag.Var(&checks, "check", "Check to execute, may specify more than once.")
 	flag.BoolVar(&read_stdin, "stdin", false, "Indicates to read zone files from stdin")
 	flag.StringVar(&output_filename, "output", "-", "Output file name, or '-' for stdout")
+	flag.BoolVar(&force_ipv4_connectivity, "force_ipv4_connectivity", true, "force_ipv4_connectivity")
+	flag.BoolVar(&force_ipv6_connectivity, "force_ipv6_connectivity", true, "force_ipv6_connectivity")
+	flag.BoolVar(&force_resolver_check, "force_resolver_check", true, "force_resolver_check")
 	logLevel = zap.LevelFlag("logging", zap.WarnLevel, "Log level (error, warn, info, debug)")
 
 	flag.Parse()

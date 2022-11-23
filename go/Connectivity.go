@@ -42,97 +42,113 @@ func CheckConnectivity() (results Connectivity) {
 			* 2620:fe::9
 	*/
 
-	// IPs above broken down into arrays by protocol.
-	ipv4Tests := []string{"1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4", "9.9.9.9", "149.112.112.112"}
-	ipv6Tests := []string{"2606:4700:4700::1111", "2606:4700:4700::1001", "2001:4860:4860::8888", "2001:4860:4860::8844", "2620:fe::fe", "2620:fe::9"}
+	if force_ipv4_connectivity {
+		// IPs above broken down into arrays by protocol.
+		ipv4Tests := []string{"1.1.1.1", "1.0.0.1", "8.8.8.8", "8.8.4.4", "9.9.9.9", "149.112.112.112"}
 
-	ipv4Success := 0
-	for _, t := range ipv4Tests {
-		logger.Debugw("Testing IPv4 connectivity", "target", t)
-		reply, err := DirectRecursiveQuery("yahoo.com.", dns.TypeSOA, net.ParseIP(t))
+		ipv4Success := 0
+		for _, t := range ipv4Tests {
+			logger.Debugw("Testing IPv4 connectivity", "target", t)
+			reply, err := DirectRecursiveQuery("yahoo.com.", dns.TypeSOA, net.ParseIP(t))
 
-		if err != nil {
-			logger.Debugw("Error", "err", err)
-			continue
-		}
-
-		if reply == nil {
-			continue
-		}
-
-		found := false
-
-		for _, answer := range reply.Answer {
-			if answer.Header().Rrtype == dns.TypeSOA {
-				found = true
+			if err != nil {
+				logger.Debugw("Error", "err", err)
+				continue
 			}
+
+			if reply == nil {
+				continue
+			}
+
+			found := false
+
+			for _, answer := range reply.Answer {
+				if answer.Header().Rrtype == dns.TypeSOA {
+					found = true
+				}
+			}
+
+			if found {
+				ipv4Success++
+			}
+
+			logger.Debugw("Tested IPv4 connecvity", "target", t, "result", found)
+
 		}
 
-		if found {
-			ipv4Success++
+		if ipv4Success == len(ipv4Tests) {
+			results.Ipv4 = true
 		}
-
-		logger.Debugw("Tested IPv4 connecvity", "target", t, "result", found)
-
-	}
-
-	if ipv4Success == len(ipv4Tests) {
+	} else {
+		logger.Debugw("Skip IPv4 connectivity check")
 		results.Ipv4 = true
 	}
 
-	ipv6Success := 0
-	for _, t := range ipv6Tests {
-		logger.Debugw("Testing IPv6 connectivity", "target", t)
-		reply, err := DirectRecursiveQuery("yahoo.com.", dns.TypeSOA, net.ParseIP(t))
+	if force_ipv6_connectivity {
+		ipv6Tests := []string{"2606:4700:4700::1111", "2606:4700:4700::1001", "2001:4860:4860::8888", "2001:4860:4860::8844", "2620:fe::fe", "2620:fe::9"}
 
-		if err != nil || reply == nil {
-			continue
-		}
+		ipv6Success := 0
+		for _, t := range ipv6Tests {
+			logger.Debugw("Testing IPv6 connectivity", "target", t)
+			reply, err := DirectRecursiveQuery("yahoo.com.", dns.TypeSOA, net.ParseIP(t))
 
-		found := false
-
-		for _, answer := range reply.Answer {
-			if answer.Header().Rrtype == dns.TypeSOA {
-				found = true
+			if err != nil || reply == nil {
+				continue
 			}
+
+			found := false
+
+			for _, answer := range reply.Answer {
+				if answer.Header().Rrtype == dns.TypeSOA {
+					found = true
+				}
+			}
+
+			if found {
+				ipv6Success++
+			}
+
+			logger.Debugw("Tested IPv6 connecvity", "target", t, "result", found)
 		}
 
-		if found {
-			ipv6Success++
+		if ipv6Success == len(ipv6Tests) {
+			results.Ipv6 = true
 		}
-
-		logger.Debugw("Tested IPv6 connecvity", "target", t, "result", found)
-	}
-
-	if ipv6Success == len(ipv6Tests) {
+	} else {
+		logger.Debugw("Skip IPv6 connectivity check")
 		results.Ipv6 = true
 	}
 
-	resolverSuccess := 0
-	for _, t := range resolvers {
-		logger.Debugw("Testing resolver", "target", t)
-		reply, err := DirectRecursiveQuery("yahoo.com.", dns.TypeSOA, net.ParseIP(t))
+	if force_resolver_check {
+		resolverSuccess := 0
+		for _, t := range resolvers {
+			logger.Debugw("Testing resolver", "target", t)
+			reply, err := DirectRecursiveQuery("yahoo.com.", dns.TypeSOA, net.ParseIP(t))
 
-		if err != nil || reply == nil {
-			continue
-		}
-
-		found := false
-
-		for _, answer := range reply.Answer {
-			if answer.Header().Rrtype == dns.TypeSOA {
-				found = true
+			if err != nil || reply == nil {
+				continue
 			}
+
+			found := false
+
+			for _, answer := range reply.Answer {
+				if answer.Header().Rrtype == dns.TypeSOA {
+					found = true
+				}
+			}
+
+			if found {
+				resolverSuccess++
+			}
+
+			logger.Debugw("Tested resolver", "target", t, "result", found)
 		}
 
-		if found {
-			resolverSuccess++
+		if resolverSuccess == len(resolvers) {
+			results.Resolvers = true
 		}
-
-		logger.Debugw("Tested resolver", "target", t, "result", found)
-	}
-
-	if resolverSuccess == len(resolvers) {
+	} else {
+		logger.Debugw("Skip resolver check")
 		results.Resolvers = true
 	}
 
