@@ -101,7 +101,7 @@ func (self *NsChecker) Check(record dns.RR) (err error) {
 	// this server failed.
 	if answers == 0 {
 
-		results.Add(Result{ns.Hdr.Name, time.Now(), "ns", ns.Ns, fmt.Sprintf("Dangling NS %s -> %s: Target NS name doesn't exist", ns.Header().Name, ns.Ns)})
+		results.Add(Result{ns.Hdr.Name, time.Now(), "ns", ns.Ns, fmt.Sprintf("Dangling NS %s -> %s: Target NS name doesn't exist", ns.Header().Name, ns.Ns), label_value})
 	}
 
 	return
@@ -119,7 +119,7 @@ func (self *NsChecker) checkSOA(ns *dns.NS, server net.IP) (err error) {
 
 	// Catch if the server is unreachable or gives an error of some kind so that we can provide more detail.
 	if err != nil || reply == nil {
-		results.Add(Result{ns.Header().Name, time.Now(), "ns", ns.Ns, fmt.Sprintf("Dangling NS %s -> %s: Target NS query failed", ns.Header().Name, ns.Ns)})
+		results.Add(Result{ns.Header().Name, time.Now(), "ns", ns.Ns, fmt.Sprintf("Dangling NS %s -> %s: Target NS query failed", ns.Header().Name, ns.Ns), label_value})
 		return
 	}
 
@@ -134,7 +134,7 @@ func (self *NsChecker) checkSOA(ns *dns.NS, server net.IP) (err error) {
 
 	// If we didn't get the right SOA, report it.
 	if !found {
-		results.Add(Result{ns.Header().Name, time.Now(), "ns", ns.Ns, fmt.Sprintf("Dangling NS %s -> %s: Target NS doesn't answer for this name", ns.Header().Name, ns.Ns)})
+		results.Add(Result{ns.Header().Name, time.Now(), "ns", ns.Ns, fmt.Sprintf("Dangling NS %s -> %s: Target NS doesn't answer for this name", ns.Header().Name, ns.Ns), label_value})
 	}
 
 	return

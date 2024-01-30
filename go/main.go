@@ -55,6 +55,7 @@ var resolver_idx int
 var read_stdin bool
 var logLevel *zapcore.Level
 var output_filename string
+var label_value string
 
 // var httpcheck HttpChecker
 
@@ -67,6 +68,7 @@ func main() {
 	flag.BoolVar(&read_stdin, "stdin", false, "Indicates to read zone files from stdin")
 	flag.StringVar(&output_filename, "output", "-", "Output file name, or '-' for stdout")
 	logLevel = zap.LevelFlag("logging", zap.WarnLevel, "Log level (error, warn, info, debug)")
+	flag.StringVar(&label_value, "label", "none", "additional label added to the output")
 
 	flag.Parse()
 

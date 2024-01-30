@@ -135,7 +135,7 @@ func (self *HttpFingerprint) Check(rr dns.RR, answers []dns.RR) {
 	// we got from the server.
 	for _, fingerprint := range self.Fingerprint {
 		if strings.Contains(string(content), fingerprint) {
-			results.Add(Result{rr.Header().Name, time.Now(), "http", fingerprint, fmt.Sprintf("Dangling site %s -> %s (%s)", rr.Header().Name, self.Service, fingerprint)})
+			results.Add(Result{rr.Header().Name, time.Now(), "http", fingerprint, fmt.Sprintf("Dangling site %s -> %s (%s)", rr.Header().Name, self.Service, fingerprint), label_value})
 		}
 	}
 

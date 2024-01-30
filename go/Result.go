@@ -16,6 +16,7 @@ type Result struct {
 	Check       string    `json:"check"`
 	Target      string    `json:"target"`
 	Description string    `json:"description"`
+	Label       string    `json:"label"`
 }
 
 type Results []Result
