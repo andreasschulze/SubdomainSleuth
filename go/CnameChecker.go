@@ -93,7 +93,7 @@ func (self *CnameChecker) Check(record dns.RR) (err error) {
 	// or at least highly suspicious.
 	if answers == 0 {
 		logger.Infow("Found no answers for CNAME", "record", cname.Header().Name, "target", cname.Target)
-		results.Add(Result{cname.Header().Name, time.Now(), "cname", cname.Target, fmt.Sprintf("Dangling CNAME %s -> %s", cname.Header().Name, cname.Target)})
+		results.Add(Result{cname.Header().Name, time.Now(), "cname", cname.Target, fmt.Sprintf("Dangling CNAME %s -> %s", cname.Header().Name, cname.Target), label_value})
 	}
 
 	return
